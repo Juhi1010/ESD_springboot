@@ -59,4 +59,11 @@ public class JWTHelper {
 //        return (extractedUsername.equals(username) && !isTokenExpired(token));
         return !isTokenExpired(token);
     }
+
+    public String removeBearerFromToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return token;
+    }
 }

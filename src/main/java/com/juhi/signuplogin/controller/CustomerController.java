@@ -32,16 +32,12 @@ public class CustomerController {
     }
 
 //    @PostMapping("/update")
-//    public ResponseEntity<String> update(@RequestBody @Valid LoginRequest request) {
-//        return ResponseEntity.ok(customerService.update(request));
+//    public ResponseEntity<?> updateCustomer(@RequestHeader("Authorization") String token, @RequestBody CustomerRequest updatedCustomer) {
+//        return ResponseEntity.ok(customerService.updateCustomer(token, updatedCustomer));
 //    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String token) {
-
-            if (token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
 
             boolean deleted = customerService.deleteCustomer(token);
 
@@ -49,6 +45,7 @@ public class CustomerController {
                 return ResponseEntity.ok("Customer deleted successfully");
             }
         return ResponseEntity.status(401).body("Error deleting customer");
+
     }
 
 

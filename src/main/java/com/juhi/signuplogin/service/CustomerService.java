@@ -52,6 +52,8 @@ public class CustomerService {
 
     public boolean deleteCustomer(String token) {
 
+        token = jwtHelper.removeBearerFromToken(token);
+
         if (!jwtHelper.validateToken(token)) {
             throw new IllegalArgumentException("Invalid token");
         }
@@ -64,5 +66,6 @@ public class CustomerService {
         customerRepo.delete(customer);
         return true;
     }
+
 
 }
