@@ -1,38 +1,55 @@
 package com.juhi.signuplogin.controller;
 
 import com.juhi.signuplogin.dto.CustomerRequest;
+import com.juhi.signuplogin.dto.CustomerResponse;
 import com.juhi.signuplogin.dto.LoginRequest;
 import com.juhi.signuplogin.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v2/customers")
+@RequestMapping("api/v1/customers")
+@RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping("/addcustomer")
-    public ResponseEntity<String> createCustoemr(@RequestBody @Valid CustomerRequest request) {
+    @GetMapping("/{email}")
+    public ResponseEntity<CustomerResponse> getCustomer(@PathVariable("email") String email) {
+        return ResponseEntity.ok(customerService.retrieveCustomer(email));
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createCustomer(@RequestBody @Valid CustomerRequest request) {
         return ResponseEntity.ok(customerService.createCustomer(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
-        boolean isAuthenticated = customerService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
-        }
+    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
+        return ResponseEntity.ok(customerService.login(request));
     }
+
+//    @PostMapping("/update")
+//    public ResponseEntity<String> update(@RequestBody @Valid LoginRequest request) {
+//        return ResponseEntity.ok(customerService.update(request));
+//    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String token) {
+
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            boolean deleted = customerService.deleteCustomer(token);
+
+            if (deleted) {
+                return ResponseEntity.ok("Customer deleted successfully");
+            }
+        return ResponseEntity.status(401).body("Error deleting customer");
+    }
+
+
 }
-
-
